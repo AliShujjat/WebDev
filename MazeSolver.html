@@ -1,0 +1,170 @@
+<html>
+<head>
+<script lang="javascript">
+
+var cellStates = Object.freeze( {hurdle: 1, blank: 2, backtrack: 3, north: 4, south: 5, east: 6, west: 7, start: 8, finish: 9 } );
+
+var stateText = { [cellStates.hurdle] : "",  [cellStates.start] : "S", [cellStates.finish]: "F",
+	[cellStates.blank] : "", [cellStates.backtrack]: "B", [cellStates.north]: "↑", [cellStates.south]: "↓", 
+    [cellStates.east]: "→", [cellStates.west]: "←" };
+
+function setCell(row, col, cellState) {
+	var x = col * 20;
+  	var y = row * 20;
+  	var cv = document.getElementById('cv');
+  	var ctx = cv.getContext('2d');
+  	ctx.fillStyle = "blue"; 
+  	ctx.fillRect(x, y, 20, 20);
+  	x++;
+  	y++;
+  	ctx.fillStyle = (cellState == cellStates.hurdle ? "black" : "white");
+  	ctx.fillRect(x, y, 18, 18);
+    if( cellState != cellStates.hurdle ) {
+    	ctx.font = "bold 15px Arial";
+        ctx.fillStyle = "red";
+        ctx.fillText( stateText[cellState], x+3, y+14 );
+    }
+}
+var states;
+
+function generateMaze(size)
+{
+	states = new Array(size);
+	for( rowIndex = 0; rowIndex < size; ++rowIndex ) {
+    	states[rowIndex] = new Array(size);
+        
+  		for( colIndex = 0; colIndex < size; ++colIndex ) {
+   			var rd = Math.floor(Math.random() * 3);
+      		states[rowIndex][colIndex] = (rowIndex + colIndex == 0 ? cellStates.start :
+            	( rowIndex == size - 1 && colIndex == size - 1 ? cellStates.finish :
+                ( rd == 0 ? cellStates.hurdle : cellStates.blank )));
+	        setCell(rowIndex, colIndex, states[rowIndex][colIndex]);
+        }
+    }
+}
+
+//taken from https://flaviocopes.com/javascript-sleep/
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+async function solveMaze()
+{
+    var x = 0; //Our Columns
+    var y = 0; //Our Rows
+    var stackie = [];
+    while(states[y][x] != cellStates.finish) {
+        if (states[y][x+1] == cellStates.finish)
+        {
+            states[y][x] = cellStates.east;
+            setCell(y, x, states[y][x]);
+            await sleep(50);
+            alert("Maze Solved!🎉");
+            return;
+        }
+        else if ((y+1 == 0 || x+1 == 0) && y+1 == cellStates.hurdle)
+        {
+            alert("The maze is unsolvable!☹️");
+            return;
+        }
+        else if (y == 19)
+        {
+            while(states[y][x] != cellStates.finish)
+            {
+                if (states[y][x+1] == cellStates.hurdle) 
+                {
+                    alert("The maze is unsolvable!☹️");
+                    return;
+                }
+            }
+        }
+        else if (states[y][x+1] == cellStates.finish)
+        {
+            states[y][x] = cellStates.south;
+            setCell(y , x, states[y][x]);
+            await sleep(50);
+            alert("Maze Solved!🎉");
+            return;         
+        }
+        else if (x < 19 && states[y][x+1] == 2)
+        {
+            states[y][x+1] = cellStates.east;
+            setCell(y,x+1, states[y][x+1]);
+            await sleep(50);
+            x = x + 1;
+            stackie.push([y,x]);
+        }
+        else if ( y < 19 && states[y+1][x] == 2)
+        {
+            states[y+1][x] = cellStates.south;
+            setCell(y+1,x, states[y+1][x]);
+            await sleep(50);
+            y = y + 1;
+            stackie.push([y,x]);
+        }
+        else if (x > 0 && states[y][x-1] == 2)
+        {
+            states[y][x-1] = cellStates.west;
+            setCell(y,x-1, states[y][x-1]);
+            await sleep(50);
+            x = x - 1;
+            stackie.push([y,x]);
+        }
+        else if (y > 0 && states[y-1][x] == 2)
+        {
+            states[y-1][x] = cellStates.north;
+            setCell(y-1,x, states[y-1][x]);
+            await sleep(50);
+            y = y - 1;
+            stackie.push([y,x]);
+        }
+        else if (stackie.length == 0)
+        {
+            alert("The maze is unsolvable!☹️");
+            return;
+        }
+        else
+        {
+            if (stackie.length > 0)
+            {
+                stackie.pop();
+                states[y][x] = cellStates.backtrack;
+                setCell(y,x,states[y][x]);
+                await sleep(50);
+
+
+                var values = Backtracking(stackie,y,x);
+                y = values[0];
+                x = values[1];
+                states[y][x] = cellStates.backtrack;
+                setCell(y, x, states[y][x]);
+                await sleep(50);
+            }
+
+        }
+        //console.log(y,x);
+    }
+}
+
+function Backtracking(s, y, x)
+{   
+    var step = s.pop();
+    x = step[1];
+    y = step[0];
+    return ([y,x]);
+
+}
+
+</script>
+</head>
+<body onload="generateMaze(20);">
+  <p>
+  Maze Generator &amp; Solver
+  </p>
+  <canvas id="cv" width="400" height="400">
+    
+  </canvas>
+  <input type="button" value="Solve it!" onclick="solveMaze();" />
+</body>
+</html>
