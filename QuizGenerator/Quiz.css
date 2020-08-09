@@ -1,0 +1,139 @@
+h1 {
+	text-align: center;
+	margin: 2px 0 15px 0;
+}
+
+
+/*
+Implement more styles to ensure questions are displayed and printed correctly (as per the PDF file for questions and answers).
+*/
+
+
+body
+{
+	margin: 0;
+	background-color: white;
+}
+
+
+.pageHeader
+{
+	background-color: rgba(172, 28, 236, 0.4);
+	text-align: center;
+	font-family: 'Brush Script MT', Brush Script Std, cursive;
+}
+
+
+
+.actionButtons
+{
+	padding-left:30%;
+	padding-right:30%;
+	text-align: center;
+	
+}
+
+
+
+button
+{
+	border:0;
+	background-color: #37D79F;
+	color: white;
+	border-radius: 50%;
+	font-size: 1rem;
+	padding:  1rem;
+	margin: 10px
+}
+
+
+.questionslist > div > li 
+{
+	
+	font-weight: bold;
+	font-family: FreeMono, monospace;
+	margin: 0 5px 1rem;
+	border-radius: 1%;
+	padding: 0;
+
+}
+
+.questionslist > div > li >p 
+
+{
+
+	margin: 0;
+	padding: 1rem ;
+	background-color: white;
+	
+}
+
+
+
+
+.optionslist > li
+{
+	list-style: lower-alpha;
+}
+
+
+
+@media (min-width: 576px){}
+  
+  
+  @media (min-width: 768px) 
+  {
+    .pageHeader
+    {
+    	padding: 4rem;
+		font-size: 1.5rem;
+	}
+  }
+  
+  
+  @media (min-width: 992px){}
+  
+  
+  @media (min-width: 1200px) 
+  {
+
+	#questionContainer
+	{
+		padding-left: 30%;
+		padding-right: 30%;
+  	}
+	
+	.pageHeader
+	{
+		font-size: 1.5rem;
+		padding: 5rem;
+	}
+	
+	.actionButtons :nth-child(1)
+	{
+		float: left;
+	}
+	
+	.actionButtons :nth-child(2)
+	{
+		float: right;
+	}
+
+	.actionButtons
+	{	
+		padding-top:  1rem;
+		padding-bottom: 3.5rem;	
+	}
+
+  }
+
+
+/* The below media query ensures that the buttons are not visible in print */
+@media print 
+{
+	div.actionButtons 
+	{
+		display: none !important;
+	}
+	
+}
